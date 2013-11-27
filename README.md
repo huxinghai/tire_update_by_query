@@ -1,24 +1,51 @@
+
 # TireUpdateByQuery
 
-TODO: Write a gem description
+
+ 扩展[retire](https://github.com/karmi/retire)与使用[elasticsearch-action-updatebyquery](https://github.com/yakaz/elasticsearch-action-updatebyquery)插件, 根据查询更新数据
 
 ## Installation
+先安装[elasticsearch-action-updatebyquery](https://github.com/yakaz/elasticsearch-action-updatebyquery)
 
-Add this line to your application's Gemfile:
+    gem 'tire_update_by_query', :github => "huxinghai1988/tire_update_by_query"
 
-    gem 'tire_update_by_query'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install tire_update_by_query
 
 ## Usage
 
-TODO: Write usage instructions here
+    #数据
+    {
+      name: 'iPhone4',
+      price: 4000,
+      user:{
+        id: 1,
+        name: 'lisi'
+      }
+    }
+
+    #更新user名称
+    Model.index.update_by_query('type',
+      :query => {
+        :term => {
+          :user_id => 1
+        }
+      },
+      :update => {
+        :user => {
+          :name => 'lisitest'
+        }
+      }
+    )
+
+    #数据结果
+    {
+      name: 'iPhone4',
+      price: 4000,
+      user:{
+        id: 1,
+        name: 'lisitest'
+      }
+    }
+
 
 ## Contributing
 
