@@ -46,6 +46,16 @@
       }
     }
 
+    Class Model < ActiveRecord::Base
+      include Tire::Model::UpdateByQuery
+
+    end
+
+    Model.index_update_by_query(
+      :query => {...},
+      :update => {...}
+    )
+
 
 ## Contributing
 
