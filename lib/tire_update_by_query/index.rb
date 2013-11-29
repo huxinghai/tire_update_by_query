@@ -10,8 +10,12 @@ module Tire
       _params = options.slice(:update)
       options.delete(:update)
       (options[:params] ||= {}).merge!(_params[:update])
-      format = lambda{|opts| opts.map{|k, v| v.is_a?(Hash) ? format.call(v).map{|vl| "#{k}.#{vl.is_a?(Array) ? vl.join('.') : vl}" } : k} }
-      options[:script] = format.call(_params[:update]).flatten.map{|v| "ctx._source.#{v}=#{v}" }.join(";")
+      format = lambda do |opts|
+        f, value, lm = lambda{|k, vl| vl.is_a?(Hash) ? lm.call(k, vl) : value << k }, [], lambda{|k, vl| vl.each{|kl, v| f.call("#{k}.#{kl}", v)} }
+        lm.call("", opts)
+        value
+      end
+      options[:script] = format.call(_params[:update]).map{|v| "ctx._source.#{v}=#{v}" }.join(";")
       url = "#{self.url}/#{type}/_update_by_query"
       Configuration.client.post url, MultiJson.encode(options)
     ensure
