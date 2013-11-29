@@ -11,7 +11,7 @@ module Tire
       options.delete(:update)
       (options[:params] ||= {}).merge!(_params[:update])
       format = lambda do |opts|
-        f, value, lm = lambda{|k, vl| vl.is_a?(Hash) ? lm.call(k, vl) : value << k }, [], lambda{|k, vl| vl.each{|kl, v| f.call("#{k}.#{kl}", v)} }
+        f, value, lm = lambda{|k, vl| vl.is_a?(Hash) ? lm.call(k, vl) : value << k }, [], lambda{|k, vl| vl.each{|kl, v| key = (k.empty? ? kl : "#{k}.#{kl}"); f.call(key, v)} }
         lm.call("", opts)
         value
       end
