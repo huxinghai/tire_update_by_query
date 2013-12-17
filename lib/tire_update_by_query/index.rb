@@ -7,10 +7,10 @@ module Tire
       unless options.key?(:script) || options.key?(:update)
         raise ArgumentError, "Please pass a update or script"
       end
-      _params = options.slice(:update)
+      _params = options[:update]
       options.delete(:update)
-      (options[:params] ||= {}).merge!(_params[:update])
-      options[:script] = format_options(_params[:update]).map{|v| "ctx._source.#{v}=#{v}" }.join(";")
+      (options[:params] ||= {}).merge!(_params)
+      options[:script] = join_field(_params) unless options.key?(:script)
       url = "#{self.url}/#{type}/_update_by_query"
       Configuration.client.post url, MultiJson.encode(options)
     ensure
@@ -19,6 +19,10 @@ module Tire
     end
 
     private
+    def join_field(params)
+      format_options(params).map{|v| "ctx._source.#{v}=#{v}" }.join(";")
+    end
+
     def format_options(opts, key = "", values = [])
       opts.each do |k, v|
         _key = key.empty? ? k : "#{key}.#{k}"
